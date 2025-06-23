@@ -1,4 +1,4 @@
-# Ex.No: 03   COMPUTE THE AUTO FUNCTION(ACF)
+## Ex.No: 03   COMPUTE THE AUTO FUNCTION(ACF)
 Date: 
 
 ### AIM:
@@ -11,33 +11,45 @@ type to fit the data.
 4. Store the results in an array
 5. Represent the result in graphical representation as given below.
 ### PROGRAM:
+```py
+import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
-import numpy as np
+data = pd.read_csv('XAUUSD_2010-2023.csv')
 
-data = [3, 16, 156, 47, 246, 176, 233, 140, 130,
-101, 166, 201, 200, 116, 118, 247,
-209, 52, 153, 232, 128, 27, 192, 168, 208,
-187, 228, 86, 30, 151, 18, 254,
-76, 112, 67, 244, 179, 150, 89, 49, 83, 147, 90,
-33, 6, 158, 80, 35, 186, 127]
+time_series = data['close']
 
-lags = range(35)
+# Ensure the sales data is numeric (handling any formatting issues)
+time_series = pd.to_numeric(time_series, errors='coerce').dropna()
 
+# Calculate the number of data points and lags
+n_data_points = len(time_series)
+n_lags = min(35, n_data_points - 1)
+acf_values = np.zeros(n_lags)
 
-#Pre-allocate autocorrelation table
+# Calculate the mean and variance of the time series data
+mean = np.mean(time_series)
+variance = np.var(time_series)
+normalized_data = time_series - mean 
 
-#Mean
+# Compute the ACF manually
+for lag in range(n_lags):
+    lagged_data = np.roll(normalized_data, -lag)
+    acf_values[lag] = np.sum(normalized_data[:n_data_points-lag] * lagged_data[:n_data_points-lag]) / (variance * (n_data_points - lag))
 
-#Variance
+# Plot the ACF results with blue stems and red markers
+plt.figure(figsize=(10, 6))
+plt.stem(range(n_lags), acf_values, linefmt='b-', markerfmt='ro', basefmt='k-', use_line_collection=True)
+plt.title('ACF Plot for Close Prices')
+plt.xlabel('Lag')
+plt.ylabel('ACF')
+plt.grid(True)
+plt.show()
 
-#Normalized data
-
-#Go through lag components one-by-one
-
-#display the graph
-
+```
 ### OUTPUT:
+![image](https://github.com/user-attachments/assets/81557d9f-623e-43a7-966d-904744f743c4)
 
 ### RESULT:
-        Thus we have successfully implemented the auto correlation function in python.
+Thus we have successfully implemented the auto correlation function in python.
